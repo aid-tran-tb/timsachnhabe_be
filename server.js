@@ -200,6 +200,7 @@ const initializeDatabase = async () => {
     ];
 
     const createdOrders = await Order.insertMany(ordersSeed);
+
     console.log('✅ Sample orders created');
 
     const invoicesSeed = createdOrders.map((order, index) => ({
