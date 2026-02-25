@@ -24,20 +24,21 @@ const MONGODB_URI = process.env.SERVER_URI_MONGODB;
 // Cấu hình kết nối MongoDB với cơ chế tự động reconnect
 const connectWithRetry = () => {
   console.log('🔄 Đang kết nối đến MongoDB...');
-  mongoose.connect(MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    serverSelectionTimeoutMS: 5000, // Timeout sau 5s nếu không kết nối được
-    socketTimeoutMS: 45000, // Đóng socket sau 45s không hoạt động
-  })
-  .then(() => {
-    console.log('✅ Đã kết nối MongoDB thành công!');
-  })
-  .catch(err => {
-    console.error('❌ Kết nối MongoDB thất bại:', err.message);
-    console.log('⏱️ Thử kết nối lại sau 5 giây...');
-    setTimeout(connectWithRetry, 5000); // Thử lại sau 5 giây
-  });
+  mongoose
+    .connect(MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 5000, // Timeout sau 5s nếu không kết nối được
+      socketTimeoutMS: 45000, // Đóng socket sau 45s không hoạt động
+    })
+    .then(() => {
+      console.log('✅ Đã kết nối MongoDB thành công!');
+    })
+    .catch((err) => {
+      console.error('❌ Kết nối MongoDB thất bại:', err.message);
+      console.log('⏱️ Thử kết nối lại sau 5 giây...');
+      setTimeout(connectWithRetry, 5000); // Thử lại sau 5 giây
+    });
 };
 
 // Xử lý sự kiện kết nối MongoDB
@@ -67,7 +68,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Serve static files from public directory
-app.use('/api-docs', express.static(path.join(__dirname, 'public', 'api-docs')));
+app.use(
+  '/api-docs',
+  express.static(path.join(__dirname, 'public', 'api-docs'))
+);
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -79,10 +83,21 @@ app.use('/api/invoices', invoiceRoutes);
 app.use('/api/coupons', couponRoutes);
 app.use('/api/users', userRoutes);
 
+// Thông tin cơ bản của server
+app.get('/', (req, res) => {
+  const baseUrl = process.env.URL_DEPLOYMENT || `http://localhost:${PORT}`;
+
+  res.json({
+    message: 'Tim Sach Nha Be API',
+    serverUrl: baseUrl,
+    apiDocs: `${baseUrl}/api-docs`,
+  });
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({ message: 'Something went wrong!' });
+  console.error(err.stack);
+  res.status(500).json({ message: 'Something went wrong!' });
 });
 
 // Khởi tạo kết nối MongoDB
@@ -90,6 +105,14 @@ connectWithRetry();
 
 // Khởi động server
 app.listen(PORT, () => {
-  console.log(`🚀 Server đang chạy tại http://localhost:${PORT}`);
-  console.log(`📚 API Documentation: http://localhost:${PORT}/api-docs`);
+  console.log(
+    `🚀 Server đang chạy tại ${
+      process.env.URL_DEPLOYMENT || `http://localhost:${PORT}`
+    }`
+  );
+  console.log(
+    `📚 API Documentation: ${
+      process.env.URL_DEPLOYMENT || `http://localhost:${PORT}`
+    }/api-docs`
+  );
 });
