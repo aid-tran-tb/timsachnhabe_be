@@ -1,0 +1,2213 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Book E-commerce API",
+    "version": "1.0.0",
+    "description": "API documentation for Book E-commerce application"
+  },
+  "servers": [
+    {
+      "url": "/api",
+      "description": "API Server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "Catalog": {
+        "type": "object",
+        "required": ["genreID", "genre2nd"],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Auto-generated MongoDB ID"
+          },
+          "genreID": {
+            "type": "string",
+            "description": "Mã danh mục",
+            "unique": true
+          },
+          "genre2nd": {
+            "type": "string",
+            "description": "Tên danh mục"
+          }
+        }
+      },
+      "Product": {
+        "type": "object",
+        "required": ["ISBN", "bookTitle", "publisher", "author", "pageCount", "bookWeight", "price", "imageUrl", "catalog"],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Auto-generated MongoDB ID"
+          },
+          "ISBN": {
+            "type": "number",
+            "description": "Mã số sách quốc tế",
+            "unique": true
+          },
+          "bookTitle": {
+            "type": "string",
+            "description": "Tên sách"
+          },
+          "publisher": {
+            "type": "string",
+            "description": "Nhà xuất bản"
+          },
+          "author": {
+            "type": "string",
+            "description": "Tác giả"
+          },
+          "pageCount": {
+            "type": "number",
+            "description": "Số trang"
+          },
+          "bookWeight": {
+            "type": "string",
+            "description": "Trọng lượng sách"
+          },
+          "price": {
+            "type": "number",
+            "description": "Giá sách"
+          },
+          "description": {
+            "type": "string",
+            "description": "Mô tả sách"
+          },
+          "imageUrl": {
+            "type": "string",
+            "description": "URL hình ảnh sách"
+          },
+          "catalog": {
+            "type": "string",
+            "description": "Tên danh mục sách"
+          },
+          "soldCount": {
+            "type": "number",
+            "description": "Số lượng đã bán",
+            "default": 0
+          },
+          "stock": {
+            "type": "number",
+            "description": "Số lượng tồn kho",
+            "default": 0
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Thời gian tạo sản phẩm"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Thời gian cập nhật sản phẩm"
+          }
+        }
+      },
+      "Invoice": {
+        "type": "object",
+        "required": ["orderId", "orderDate", "paymentDate", "fullName", "email", "productTotal", "discountAmount", "finalAmount", "paymentMethod"],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Auto-generated MongoDB ID"
+          },
+          "orderId": {
+            "type": "string",
+            "description": "ID của đơn hàng",
+            "unique": true
+          },
+          "orderDate": {
+            "type": "string",
+            "description": "Ngày đặt hàng"
+          },
+          "paymentDate": {
+            "type": "string",
+            "description": "Ngày thanh toán"
+          },
+          "fullName": {
+            "type": "string",
+            "description": "Họ tên người đặt"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email người đặt"
+          },
+          "productTotal": {
+            "type": "number",
+            "description": "Tổng tiền sản phẩm"
+          },
+          "discountAmount": {
+            "type": "number",
+            "description": "Số tiền giảm giá"
+          },
+          "finalAmount": {
+            "type": "number",
+            "description": "Tổng tiền cuối cùng"
+          },
+          "paymentMethod": {
+            "type": "string",
+            "description": "Phương thức thanh toán"
+          }
+        }
+      },
+      "Coupon": {
+        "type": "object",
+        "required": ["promoID", "promoName", "promoType", "amount", "startDate", "endDate"],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Auto-generated MongoDB ID"
+          },
+          "promoID": {
+            "type": "string",
+            "description": "Mã khuyến mãi",
+            "unique": true
+          },
+          "promoName": {
+            "type": "string",
+            "description": "Tên khuyến mãi"
+          },
+          "promoType": {
+            "type": "string",
+            "description": "Loại khuyến mãi"
+          },
+          "amount": {
+            "type": "string",
+            "description": "Giá trị khuyến mãi"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Ngày bắt đầu"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "Ngày kết thúc"
+          },
+          "Description": {
+            "type": "string",
+            "description": "Mô tả khuyến mãi"
+          }
+        }
+      },
+      "Order": {
+        "type": "object",
+        "required": ["userId", "products", "totalAmount", "orderDate", "paymentMethod", "shippingAddress", "status"],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Auto-generated MongoDB ID"
+          },
+          "userId": {
+            "type": "string",
+            "description": "ID của người dùng",
+            "ref": "User"
+          },
+          "products": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "productId": {
+                  "type": "string",
+                  "description": "ID của sản phẩm",
+                  "ref": "Product_books"
+                },
+                "quantity": {
+                  "type": "number",
+                  "description": "Số lượng sản phẩm"
+                },
+                "price": {
+                  "type": "number",
+                  "description": "Giá sản phẩm"
+                }
+              },
+              "required": ["productId", "quantity", "price"]
+            }
+          },
+          "totalAmount": {
+            "type": "number",
+            "description": "Tổng tiền đơn hàng"
+          },
+          "orderDate": {
+            "type": "string",
+            "description": "Ngày đặt hàng"
+          },
+          "paymentMethod": {
+            "type": "string",
+            "description": "Phương thức thanh toán"
+          },
+          "shippingAddress": {
+            "type": "string",
+            "description": "Địa chỉ giao hàng"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "processing", "completed", "cancelled"],
+            "description": "Trạng thái đơn hàng"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Thời gian tạo đơn hàng"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Thời gian cập nhật đơn hàng"
+          }
+        }
+      },
+      "Review": {
+        "type": "object",
+        "required": ["rating", "bookId"],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Auto-generated MongoDB ID"
+          },
+          "rating": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 5,
+            "description": "Đánh giá (1-5 sao)"
+          },
+          "comment": {
+            "type": "string",
+            "description": "Nội dung đánh giá"
+          },
+          "bookId": {
+            "type": "number",
+            "description": "ID của sách"
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "required": ["fullName", "email", "password"],
+        "properties": {
+          "fullName": { "type": "string", "description": "Họ tên người dùng" },
+          "email": { "type": "string", "description": "Email người dùng" },
+          "password": { "type": "string", "description": "Mật khẩu người dùng" },
+          "phoneNumber": { "type": "string", "description": "Số điện thoại người dùng" },
+          "address": { "type": "string", "description": "Địa chỉ người dùng" },
+          "status": { 
+            "type": "string", 
+            "enum": ["active", "inactive", "banned"],
+            "description": "Trạng thái tài khoản người dùng" 
+          },
+          "role": { 
+            "type": "string", 
+            "enum": ["user", "admin"],
+            "description": "Vai trò người dùng" 
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Đăng ký tài khoản user mới",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Đăng ký thành công" },
+          "400": { "description": "Dữ liệu không hợp lệ" },
+          "500": { "description": "Lỗi server" }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Đăng nhập",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": { "type": "string", "description": "Email người dùng" },
+                  "password": { "type": "string", "description": "Mật khẩu người dùng" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Đăng nhập thành công" },
+          "400": { "description": "Dữ liệu không hợp lệ" },
+          "500": { "description": "Lỗi server" }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Đăng xuất",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Đăng xuất thành công"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/auth/forgot-password": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Gửi email reset mật khẩu",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email"],
+                "properties": {
+                  "email": { "type": "string", "description": "Email người dùng cần reset mật khẩu" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Xác thực thành công" },
+          "400": { "description": "Email không tồn tại" },
+          "500": { "description": "Lỗi server" }
+        }
+      }
+    },
+    "/auth/reset-password": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Reset mật khẩu với token",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "newPassword"],
+                "properties": {
+                  "email": { "type": "string", "description": "Email người dùng" },
+                  "newPassword": { "type": "string", "description": "Mật khẩu mới" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Mật khẩu đã được cập nhật thành công" },
+          "400": { "description": "Email không tồn tại" },
+          "500": { "description": "Lỗi server" }
+        }
+      }
+    },
+    "/products": {
+      "get": {
+        "tags": ["Products"],
+        "summary": "Lấy danh sách sản phẩm",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "Số trang"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            },
+            "description": "Số lượng sản phẩm mỗi trang"
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "schema": {
+              "type": "string",
+              "enum": ["price", "-price", "bookTitle", "-bookTitle", "createdAt", "-createdAt"]
+            },
+            "description": "Sắp xếp theo trường (thêm dấu - để sắp xếp giảm dần)"
+          },
+          {
+            "in": "query",
+            "name": "catalog",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Lọc theo tên danh mục"
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Tìm kiếm theo tên sách hoặc mô tả"
+          },
+          {
+            "in": "query",
+            "name": "minPrice",
+            "schema": {
+              "type": "number"
+            },
+            "description": "Giá tối thiểu"
+          },
+          {
+            "in": "query",
+            "name": "maxPrice",
+            "schema": {
+              "type": "number"
+            },
+            "description": "Giá tối đa"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Danh sách sản phẩm",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "products": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Product"
+                      }
+                    },
+                    "totalProducts": {
+                      "type": "integer"
+                    },
+                    "totalPages": {
+                      "type": "integer"
+                    },
+                    "currentPage": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Products"],
+        "summary": "Tạo sản phẩm mới",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Product"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Sản phẩm đã được tạo",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dữ liệu không hợp lệ"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        }
+      }
+    },
+    "/products/{id}": {
+      "get": {
+        "tags": ["Products"],
+        "summary": "Lấy thông tin sản phẩm",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID của sản phẩm"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Thông tin sản phẩm",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Không tìm thấy sản phẩm"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Products"],
+        "summary": "Cập nhật sản phẩm",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID của sản phẩm"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Product"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sản phẩm đã được cập nhật",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dữ liệu không hợp lệ"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Không tìm thấy sản phẩm"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Products"],
+        "summary": "Xóa sản phẩm",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID của sản phẩm"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sản phẩm đã được xóa"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Không tìm thấy sản phẩm"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        }
+      }
+    },
+    "/products/top-selling": {
+      "get": {
+        "tags": ["Products"],
+        "summary": "Lấy danh sách sản phẩm bán chạy nhất",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "default": 5
+            },
+            "description": "Số lượng sản phẩm cần lấy"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Danh sách sản phẩm bán chạy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Trạng thái thành công"
+                    },
+                    "count": {
+                      "type": "integer",
+                      "description": "Số lượng sản phẩm trả về"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Product"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        }
+      }
+    },
+    "/products/catalog/{catalog}": {
+      "get": {
+        "tags": ["Products"],
+        "summary": "Lấy sản phẩm theo danh mục",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "catalog",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Tên danh mục"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Danh sách sản phẩm theo danh mục",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Trạng thái thành công"
+                    },
+                    "count": {
+                      "type": "integer",
+                      "description": "Số lượng sản phẩm tìm thấy"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Product"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        }
+      }
+    },
+    "/products/search": {
+      "get": {
+        "tags": ["Products"],
+        "summary": "Tìm kiếm sản phẩm",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Từ khóa tìm kiếm"
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "Số trang"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            },
+            "description": "Số lượng sản phẩm mỗi trang"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Kết quả tìm kiếm",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "products": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Product"
+                      }
+                    },
+                    "totalProducts": {
+                      "type": "integer"
+                    },
+                    "totalPages": {
+                      "type": "integer"
+                    },
+                    "currentPage": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        }
+      }
+    },
+    "/invoices": {
+      "get": {
+        "tags": ["Invoices"],
+        "summary": "Lấy danh sách hóa đơn",
+        "responses": {
+          "200": {
+            "description": "Danh sách hóa đơn",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Invoice"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Invoices"],
+        "summary": "Tạo hóa đơn mới",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Invoice"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Hóa đơn đã được tạo"
+          }
+        }
+      }
+    },
+    "/invoices/{id}": {
+      "get": {
+        "tags": ["Invoices"],
+        "summary": "Lấy thông tin hóa đơn",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Thông tin hóa đơn",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Invoice"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Invoices"],
+        "summary": "Cập nhật hóa đơn",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Invoice"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Hóa đơn đã được cập nhật"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Invoices"],
+        "summary": "Xóa hóa đơn",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Hóa đơn đã được xóa"
+          }
+        }
+      }
+    },
+    "/coupons": {
+      "get": {
+        "tags": ["Coupons"],
+        "summary": "Lấy danh sách coupon",
+        "responses": {
+          "200": {
+            "description": "Danh sách coupon",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Coupon"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Coupons"],
+        "summary": "Tạo coupon mới",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Coupon"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Coupon đã được tạo"
+          }
+        }
+      }
+    },
+    "/coupons/{id}": {
+      "get": {
+        "tags": ["Coupons"],
+        "summary": "Lấy thông tin coupon",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Thông tin coupon",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Coupon"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Coupons"],
+        "summary": "Cập nhật coupon",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Coupon"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Coupon đã được cập nhật"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Coupons"],
+        "summary": "Xóa coupon",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Coupon đã được xóa"
+          }
+        }
+      }
+    },
+    "/catalog": {
+      "get": {
+        "tags": ["Catalog"],
+        "summary": "Lấy tất cả catalog",
+        "responses": {
+          "200": {
+            "description": "Danh sách catalog",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Catalog"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Catalog"],
+        "summary": "Tạo catalog mới",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Catalog"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Catalog đã được tạo thành công"
+          },
+          "400": {
+            "description": "Dữ liệu không hợp lệ"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/catalog/{id}": {
+      "get": {
+        "tags": ["Catalog"],
+        "summary": "Lấy catalog theo ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID của catalog"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Thông tin catalog",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Catalog"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Không tìm thấy catalog"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Catalog"],
+        "summary": "Cập nhật catalog",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID của catalog"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Catalog"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Catalog đã được cập nhật"
+          },
+          "404": {
+            "description": "Không tìm thấy catalog"
+          },
+          "400": {
+            "description": "Dữ liệu không hợp lệ"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Catalog"],
+        "summary": "Xóa catalog",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID của catalog"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Catalog đã được xóa"
+          },
+          "404": {
+            "description": "Không tìm thấy catalog"
+          },
+          "500": {
+            "description": "Lỗi server"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/orders": {
+      "get": {
+        "tags": ["Orders"],
+        "summary": "Lấy tất cả orders",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Danh sách orders",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "ID của đơn hàng"
+                      },
+                      "customerName": {
+                        "type": "string",
+                        "description": "Tên khách hàng"
+                      },
+                      "customerEmail": {
+                        "type": "string",
+                        "description": "Email khách hàng"
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "description": "Thời gian tạo đơn hàng"
+                      },
+                      "totalAmount": {
+                        "type": "number",
+                        "description": "Tổng tiền đơn hàng"
+                      },
+                      "status": {
+                        "type": "string",
+                        "description": "Trạng thái đơn hàng"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Orders"],
+        "summary": "Tạo order mới",
+        "description": "Cần truyền userId vào request body để xác định đơn hàng thuộc về người dùng nào",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["userId", "products", "paymentMethod", "shippingAddress"],
+                "properties": {
+                  "userId": {
+                    "type": "string",
+                    "description": "ID của người dùng đặt hàng"
+                  },
+                  "products": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "productId": {
+                          "type": "string",
+                          "description": "ID của sản phẩm"
+                        },
+                        "quantity": {
+                          "type": "number",
+                          "description": "Số lượng sản phẩm"
+                        },
+                        "price": {
+                          "type": "number",
+                          "description": "Giá sản phẩm"
+                        }
+                      },
+                      "required": ["productId", "quantity", "price"]
+                    }
+                  },
+                  "paymentMethod": {
+                    "type": "string",
+                    "description": "Phương thức thanh toán"
+                  },
+                  "shippingAddress": {
+                    "type": "string",
+                    "description": "Địa chỉ giao hàng"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Order đã được tạo thành công, trả về đầy đủ thông tin đơn hàng đã lưu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Order"
+                },
+                "example": {
+                  "_id": "64a7b3c4f3d7a123e89b1d45",
+                  "userId": "64a7b1c2f3d7a123e89b1d42",
+                  "products": [
+                    {
+                      "productId": "64a7b2c3f3d7a123e89b1d43",
+                      "quantity": 2,
+                      "price": 150000
+                    }
+                  ],
+                  "totalAmount": 300000,
+                  "orderDate": "2023-07-06T14:25:30.123Z",
+                  "paymentMethod": "COD",
+                  "shippingAddress": "123 Nguyễn Văn A, Q.1, TP.HCM",
+                  "status": "pending",
+                  "createdAt": "2023-07-06T14:25:30.123Z",
+                  "updatedAt": "2023-07-06T14:25:30.123Z"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dữ liệu không hợp lệ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Thông báo lỗi"
+                    },
+                    "details": {
+                      "type": "string",
+                      "description": "Chi tiết lỗi (nếu có)"
+                    }
+                  }
+                },
+                "examples": {
+                  "missingUserId": {
+                    "value": {
+                      "error": "userId là bắt buộc"
+                    }
+                  },
+                  "invalidProductData": {
+                    "value": {
+                      "error": "Lỗi khi tạo order",
+                      "details": "Products array is required"
+                    }
+                  },
+                  "insufficientStock": {
+                    "value": {
+                      "error": "Số lượng sản phẩm trong kho không đủ",
+                      "product": "Đắc Nhân Tâm",
+                      "requested": 5,
+                      "available": 2
+                    }
+                  },
+                  "productNotFound": {
+                    "value": {
+                      "error": "Sản phẩm không tồn tại",
+                      "productId": "60d21bb067d0d8992e610c87"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/orders/{id}": {
+      "get": {
+        "tags": ["Orders"],
+        "summary": "Lấy order theo ID",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID của order"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Thông tin order",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "ID của đơn hàng"
+                    },
+                    "customerInfo": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "Tên khách hàng"
+                        },
+                        "email": {
+                          "type": "string",
+                          "description": "Email khách hàng"
+                        },
+                        "phoneNumber": {
+                          "type": "string",
+                          "description": "Số điện thoại khách hàng"
+                        },
+                        "address": {
+                          "type": "string",
+                          "description": "Địa chỉ khách hàng"
+                        }
+                      }
+                    },
+                    "orderInfo": {
+                      "type": "object",
+                      "properties": {
+                        "createdAt": {
+                          "type": "string",
+                          "description": "Thời gian tạo đơn hàng"
+                        },
+                        "totalAmount": {
+                          "type": "number",
+                          "description": "Tổng tiền đơn hàng"
+                        },
+                        "status": {
+                          "type": "string",
+                          "description": "Trạng thái đơn hàng"
+                        }
+                      }
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "bookId": {
+                            "type": "string",
+                            "description": "ID của sách"
+                          },
+                          "title": {
+                            "type": "string",
+                            "description": "Tên sách"
+                          },
+                          "author": {
+                            "type": "string",
+                            "description": "Tác giả sách"
+                          },
+                          "price": {
+                            "type": "number",
+                            "description": "Giá sách"
+                          },
+                          "imageUrl": {
+                            "type": "string",
+                            "description": "URL hình ảnh sách"
+                          },
+                          "quantity": {
+                            "type": "number",
+                            "description": "Số lượng"
+                          },
+                          "subtotal": {
+                            "type": "number",
+                            "description": "Thành tiền (price x quantity)"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Không tìm thấy order"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Orders"],
+        "summary": "Cập nhật order",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID của order"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": ["pending", "processing", "completed", "cancelled"],
+                    "description": "Trạng thái đơn hàng"
+                  },
+                  "paymentMethod": {
+                    "type": "string",
+                    "description": "Phương thức thanh toán"
+                  },
+                  "shippingAddress": {
+                    "type": "string",
+                    "description": "Địa chỉ giao hàng"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Order đã được cập nhật"
+          },
+          "400": {
+            "description": "Dữ liệu không hợp lệ"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Không tìm thấy order"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Orders"],
+        "summary": "Xóa order",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID của order"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Order đã được xóa"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Không tìm thấy order"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        }
+      }
+    },
+    "/orders/user/{userId}": {
+      "get": {
+        "tags": ["Orders"],
+        "summary": "Lấy đơn hàng theo ID người dùng",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID của người dùng"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Danh sách đơn hàng của người dùng",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Order"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Không tìm thấy đơn hàng cho người dùng này"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        }
+      }
+    },
+    "/reviews": {
+      "get": {
+        "tags": ["Reviews"],
+        "summary": "Lấy tất cả reviews",
+        "responses": {
+          "200": {
+            "description": "Danh sách reviews",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Review"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Reviews"],
+        "summary": "Tạo review mới",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Review"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Review đã được tạo thành công"
+          },
+          "400": {
+            "description": "Dữ liệu không hợp lệ"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/reviews/{id}": {
+      "get": {
+        "tags": ["Reviews"],
+        "summary": "Lấy review theo ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID của review"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Thông tin review",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Review"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Không tìm thấy review"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Reviews"],
+        "summary": "Cập nhật review",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID của review"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Review"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Review đã được cập nhật"
+          },
+          "400": {
+            "description": "Dữ liệu không hợp lệ"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Không tìm thấy review"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Reviews"],
+        "summary": "Xóa review",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID của review"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Review đã được xóa"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Không tìm thấy review"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Lấy danh sách user (chỉ admin)",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Danh sách user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "string", "description": "ID của người dùng" },
+                      "fullName": { "type": "string", "description": "Họ tên người dùng" },
+                      "phoneNumber": { "type": "string", "description": "Số điện thoại người dùng" },
+                      "email": { "type": "string", "description": "Email người dùng" },
+                      "status": { "type": "string", "description": "Trạng thái tài khoản" },
+                      "totalOrders": { "type": "integer", "description": "Tổng số đơn hàng" },
+                      "totalSpent": { "type": "number", "description": "Tổng số tiền đã chi tiêu" }
+                    }
+                  }
+                },
+                "example": [
+                  {
+                    "id": "60d21b4967d0d8992e610c85",
+                    "fullName": "Nguyễn Văn A",
+                    "phoneNumber": "0123456789",
+                    "email": "nguyenvana@example.com",
+                    "status": "active",
+                    "totalOrders": 2,
+                    "totalSpent": 450000
+                  },
+                  {
+                    "id": "60d21b5467d0d8992e610c86",
+                    "fullName": "Trần Thị B",
+                    "phoneNumber": "0987654321",
+                    "email": "tranthib@example.com",
+                    "status": "active",
+                    "totalOrders": 1,
+                    "totalSpent": 200000
+                  }
+                ]
+              }
+            }
+          },
+          "403": { "description": "Chỉ admin mới có quyền truy cập." }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Lấy thông tin user theo id (chỉ admin)",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Thông tin user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string", "description": "ID của người dùng" },
+                    "fullName": { "type": "string", "description": "Họ tên người dùng" },
+                    "status": { "type": "string", "description": "Trạng thái tài khoản" },
+                    "totalOrders": { "type": "integer", "description": "Tổng số đơn hàng" },
+                    "totalSpent": { "type": "number", "description": "Tổng số tiền đã chi tiêu" },
+                    "email": { "type": "string", "description": "Email người dùng" },
+                    "phoneNumber": { "type": "string", "description": "Số điện thoại người dùng" },
+                    "address": { "type": "string", "description": "Địa chỉ người dùng" },
+                    "role": { "type": "string", "description": "Vai trò người dùng" },
+                    "orders": {
+                      "type": "array",
+                      "description": "Danh sách đơn hàng của người dùng",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "string", "description": "ID của đơn hàng" },
+                          "totalAmount": { "type": "number", "description": "Tổng tiền đơn hàng" },
+                          "status": { "type": "string", "description": "Trạng thái đơn hàng" },
+                          "createdAt": { "type": "string", "description": "Thời gian tạo đơn hàng" },
+                          "items": {
+                            "type": "array",
+                            "description": "Các mặt hàng trong đơn hàng",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "bookId": { "type": "string", "description": "ID của sách" },
+                                "title": { "type": "string", "description": "Tên sách" },
+                                "author": { "type": "string", "description": "Tác giả sách" },
+                                "price": { "type": "number", "description": "Giá sách" },
+                                "imageUrl": { "type": "string", "description": "URL hình ảnh sách" },
+                                "quantity": { "type": "number", "description": "Số lượng" },
+                                "subtotal": { "type": "number", "description": "Thành tiền (price x quantity)" }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "id": "60d21b4967d0d8992e610c85",
+                  "fullName": "Nguyễn Văn A",
+                  "status": "active",
+                  "totalOrders": 2,
+                  "totalSpent": 450000,
+                  "email": "nguyenvana@example.com",
+                  "phoneNumber": "0123456789",
+                  "address": "123 Đường ABC, Quận 1, TP.HCM",
+                  "role": "user",
+                  "orders": [
+                    {
+                      "id": "60d21c5967d0d8992e610c90",
+                      "totalAmount": 250000,
+                      "status": "completed",
+                      "createdAt": "2023-07-10T08:30:00.000Z",
+                      "items": [
+                        {
+                          "bookId": "60d21bb067d0d8992e610c87",
+                          "title": "Đắc Nhân Tâm",
+                          "author": "Dale Carnegie",
+                          "price": 120000,
+                          "imageUrl": "https://example.com/images/books/dac-nhan-tam.jpg",
+                          "quantity": 1,
+                          "subtotal": 120000
+                        },
+                        {
+                          "bookId": "60d21bc567d0d8992e610c88",
+                          "title": "Nhà Giả Kim",
+                          "author": "Paulo Coelho",
+                          "price": 65000,
+                          "imageUrl": "https://example.com/images/books/nha-gia-kim.jpg",
+                          "quantity": 2,
+                          "subtotal": 130000
+                        }
+                      ]
+                    },
+                    {
+                      "id": "60d21d1067d0d8992e610c95",
+                      "totalAmount": 200000,
+                      "status": "pending",
+                      "createdAt": "2023-07-15T10:15:00.000Z",
+                      "items": [
+                        {
+                          "bookId": "60d21bd867d0d8992e610c89",
+                          "title": "Cây Cam Ngọt Của Tôi",
+                          "author": "José Mauro de Vasconcelos",
+                          "price": 200000,
+                          "imageUrl": "https://example.com/images/books/cay-cam-ngot-cua-toi.jpg",
+                          "quantity": 1,
+                          "subtotal": 200000
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "403": { "description": "Chỉ admin mới có quyền truy cập." },
+          "404": { "description": "Không tìm thấy user" }
+        }
+      },
+      "put": {
+        "tags": ["Users"],
+        "summary": "Cập nhật user (chỉ admin)",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "fullName": { "type": "string", "description": "Họ tên người dùng" },
+                  "email": { "type": "string", "description": "Email người dùng" },
+                  "phoneNumber": { "type": "string", "description": "Số điện thoại người dùng" },
+                  "address": { "type": "string", "description": "Địa chỉ người dùng" },
+                  "status": { 
+                    "type": "string", 
+                    "enum": ["active", "inactive", "banned"],
+                    "description": "Trạng thái tài khoản người dùng" 
+                  },
+                  "role": { 
+                    "type": "string", 
+                    "enum": ["user", "admin"],
+                    "description": "Vai trò người dùng" 
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "User đã được cập nhật" },
+          "403": { "description": "Chỉ admin mới có quyền truy cập." },
+          "404": { "description": "Không tìm thấy user" }
+        }
+      },
+      "delete": {
+        "tags": ["Users"],
+        "summary": "Xóa user (chỉ admin)",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Đã xóa user" },
+          "403": { "description": "Chỉ admin mới có quyền truy cập." },
+          "404": { "description": "Không tìm thấy user" }
+        }
+      }
+    },
+    "/orders/statistics": {
+      "get": {
+        "tags": ["Orders"],
+        "summary": "Lấy thống kê về đơn hàng, doanh thu và người dùng",
+        "description": "API này trả về dữ liệu tổng hợp bao gồm tổng đơn hàng, đơn hàng chờ xử lý, tổng doanh thu, tổng số người dùng và danh sách đơn hàng gần đây",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Thống kê thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "totalOrders": {
+                      "type": "integer",
+                      "description": "Tổng số đơn hàng"
+                    },
+                    "pendingOrders": {
+                      "type": "integer",
+                      "description": "Tổng số đơn hàng chờ xử lý (status = pending)"
+                    },
+                    "totalRevenue": {
+                      "type": "number",
+                      "description": "Tổng doanh thu từ tất cả đơn hàng"
+                    },
+                    "totalUsers": {
+                      "type": "integer",
+                      "description": "Tổng số người dùng (role = user)"
+                    },
+                    "recentOrders": {
+                      "type": "array",
+                      "description": "Danh sách 5 đơn hàng gần nhất",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "ID của đơn hàng"
+                          },
+                          "totalAmount": {
+                            "type": "number",
+                            "description": "Tổng tiền đơn hàng"
+                          },
+                          "status": {
+                            "type": "string",
+                            "description": "Trạng thái đơn hàng"
+                          },
+                          "orderDate": {
+                            "type": "string",
+                            "description": "Ngày đặt hàng"
+                          },
+                          "customerName": {
+                            "type": "string",
+                            "description": "Tên khách hàng"
+                          },
+                          "customerEmail": {
+                            "type": "string",
+                            "description": "Email khách hàng"
+                          },
+                          "productCount": {
+                            "type": "integer",
+                            "description": "Số lượng sản phẩm trong đơn hàng"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "totalOrders": 120,
+                  "pendingOrders": 15,
+                  "totalRevenue": 15000000,
+                  "totalUsers": 85,
+                  "recentOrders": [
+                    {
+                      "id": "64a7b3c4f3d7a123e89b1d45",
+                      "totalAmount": 300000,
+                      "status": "pending",
+                      "orderDate": "2023-08-06T14:25:30.123Z",
+                      "customerName": "Nguyễn Văn A",
+                      "customerEmail": "nguyenvana@example.com",
+                      "productCount": 2
+                    },
+                    {
+                      "id": "64a7b3c4f3d7a123e89b1d46",
+                      "totalAmount": 450000,
+                      "status": "processing",
+                      "orderDate": "2023-08-05T10:15:20.456Z",
+                      "customerName": "Trần Thị B",
+                      "customerEmail": "tranthib@example.com",
+                      "productCount": 3
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Lỗi server"
+          }
+        }
+      }
+    }
+  }
+} 

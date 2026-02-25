@@ -1,0 +1,1224 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Book E-commerce API",
+    "version": "1.0.0",
+    "description": "API documentation for Book E-commerce application"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Development server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "description": "User's full name",
+            "example": "John Doe"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "description": "User's phone number",
+            "example": "0123456789"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "User's email address (used as username)",
+            "example": "john@example.com"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "description": "User's password (min 6 characters)",
+            "example": "password123"
+          },
+          "address": {
+            "type": "string",
+            "description": "User's shipping address",
+            "example": "123 Main St, City"
+          },
+          "status": {
+            "type": "string",
+            "description": "User account status",
+            "enum": ["active", "inactive", "suspended"],
+            "example": "active"
+          },
+          "role": {
+            "type": "string",
+            "description": "User role",
+            "enum": ["user", "admin"],
+            "example": "user"
+          }
+        },
+        "required": ["fullName", "email", "password"]
+      },
+      "Book": {
+        "type": "object",
+        "properties": {
+          "ISBN": {
+            "type": "number",
+            "description": "International Standard Book Number",
+            "example": 9781234567897
+          },
+          "bookTitle": {
+            "type": "string",
+            "description": "Book title",
+            "example": "The Great Gatsby"
+          },
+          "publisher": {
+            "type": "string",
+            "description": "Book publisher",
+            "example": "Scribner"
+          },
+          "author": {
+            "type": "string",
+            "description": "Book author",
+            "example": "F. Scott Fitzgerald"
+          },
+          "pageCount": {
+            "type": "number",
+            "description": "Number of pages",
+            "example": 180
+          },
+          "bookWeight": {
+            "type": "string",
+            "description": "Book weight",
+            "example": "200g"
+          },
+          "price": {
+            "type": "number",
+            "description": "Book price",
+            "example": 19.99
+          },
+          "description": {
+            "type": "string",
+            "description": "Book description",
+            "example": "A story of the fabulously wealthy Jay Gatsby"
+          },
+          "imageUrl": {
+            "type": "string",
+            "description": "Book cover image URL",
+            "example": "https://example.com/images/great-gatsby.jpg"
+          },
+          "catalog": {
+            "type": "string",
+            "description": "Product category or catalog name",
+            "example": "Fiction"
+          },
+          "soldCount": {
+            "type": "number",
+            "description": "Number of copies sold",
+            "example": 253
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Creation timestamp",
+            "example": "2024-03-15T10:30:00Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last update timestamp",
+            "example": "2024-03-16T08:15:00Z"
+          }
+        },
+        "required": ["ISBN", "bookTitle", "publisher", "author", "pageCount", "bookWeight", "price", "imageUrl", "catalog"]
+      },
+      "Order": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "User ID",
+            "example": "60d21b4667d0d8992e610c85"
+          },
+          "products": {
+            "type": "array",
+            "description": "List of ordered products",
+            "items": {
+              "type": "object",
+              "properties": {
+                "productId": {
+                  "type": "string",
+                  "description": "Product ID",
+                  "example": "60d21b4667d0d8992e610c85"
+                },
+                "quantity": {
+                  "type": "integer",
+                  "description": "Quantity ordered",
+                  "example": 2
+                }
+              }
+            }
+          },
+          "totalAmount": {
+            "type": "number",
+            "description": "Total order amount",
+            "example": 39.98
+          },
+          "orderDate": {
+            "type": "string",
+            "description": "Order date",
+            "example": "2024-03-15"
+          },
+          "paymentMethod": {
+            "type": "string",
+            "description": "Payment method",
+            "example": "Credit Card"
+          },
+          "shippingAddress": {
+            "type": "string",
+            "description": "Shipping address",
+            "example": "123 Main St, City"
+          },
+          "status": {
+            "type": "string",
+            "description": "Order status",
+            "enum": ["pending", "processing", "shipped", "delivered", "cancelled"],
+            "example": "processing"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Creation timestamp",
+            "example": "2024-03-15T10:30:00Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Last update timestamp",
+            "example": "2024-03-16T08:15:00Z"
+          }
+        },
+        "required": ["userId", "products", "totalAmount", "orderDate", "paymentMethod", "shippingAddress", "status"]
+      },
+      "Review": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "User ID",
+            "example": "60d21b4667d0d8992e610c85"
+          },
+          "bookId": {
+            "type": "string",
+            "description": "Book ID",
+            "example": "60d21b4667d0d8992e610c85"
+          },
+          "rating": {
+            "type": "integer",
+            "description": "Rating (1-5 stars)",
+            "minimum": 1,
+            "maximum": 5,
+            "example": 5
+          },
+          "comment": {
+            "type": "string",
+            "description": "Review comment",
+            "example": "Great book! Highly recommended."
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Review creation date",
+            "example": "2024-03-15T10:30:00Z"
+          }
+        },
+        "required": ["userId", "bookId", "rating"]
+      },
+      "OrderList": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Order ID",
+            "example": "60d21b4667d0d8992e610c85"
+          },
+          "customerName": {
+            "type": "string",
+            "description": "Customer full name",
+            "example": "John Doe"
+          },
+          "customerEmail": {
+            "type": "string",
+            "format": "email",
+            "description": "Customer email",
+            "example": "john@example.com"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Order creation date",
+            "example": "2024-03-15T10:30:00Z"
+          },
+          "totalAmount": {
+            "type": "number",
+            "description": "Total order amount",
+            "example": 299.95
+          },
+          "status": {
+            "type": "string",
+            "description": "Order status",
+            "enum": ["pending", "processing", "shipped", "delivered", "cancelled"],
+            "example": "delivered"
+          }
+        }
+      },
+      "OrderDetail": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Order ID",
+            "example": "60d21b4667d0d8992e610c85"
+          },
+          "customerInfo": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Customer full name",
+                "example": "John Doe"
+              },
+              "email": {
+                "type": "string",
+                "format": "email",
+                "description": "Customer email",
+                "example": "john@example.com"
+              },
+              "phoneNumber": {
+                "type": "string",
+                "description": "Customer phone number",
+                "example": "0123456789"
+              },
+              "address": {
+                "type": "string",
+                "description": "Customer address",
+                "example": "123 Main St, City"
+              }
+            }
+          },
+          "orderInfo": {
+            "type": "object",
+            "properties": {
+              "createdAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Order creation date",
+                "example": "2024-03-15T10:30:00Z"
+              },
+              "totalAmount": {
+                "type": "number",
+                "description": "Total order amount",
+                "example": 299.95
+              },
+              "status": {
+                "type": "string",
+                "description": "Order status",
+                "enum": ["pending", "processing", "shipped", "delivered", "cancelled"],
+                "example": "delivered"
+              },
+              "paymentMethod": {
+                "type": "string",
+                "description": "Payment method",
+                "example": "Credit Card"
+              },
+              "shippingAddress": {
+                "type": "string",
+                "description": "Shipping address",
+                "example": "123 Main St, City"
+              }
+            }
+          },
+          "items": {
+            "type": "array",
+            "description": "List of items in the order",
+            "items": {
+              "type": "object",
+              "properties": {
+                "bookId": {
+                  "type": "string",
+                  "description": "Book ID",
+                  "example": "60d21b4667d0d8992e610c85"
+                },
+                "title": {
+                  "type": "string",
+                  "description": "Book title",
+                  "example": "The Great Gatsby"
+                },
+                "price": {
+                  "type": "number",
+                  "description": "Book price",
+                  "example": 19.99
+                },
+                "quantity": {
+                  "type": "integer",
+                  "description": "Quantity ordered",
+                  "example": 2
+                },
+                "subtotal": {
+                  "type": "number",
+                  "description": "Subtotal for this item",
+                  "example": 39.98
+                }
+              }
+            }
+          }
+        }
+      },
+      "PaginationInfo": {
+        "type": "object",
+        "properties": {
+          "currentPage": {
+            "type": "integer",
+            "description": "Current page number",
+            "example": 1
+          },
+          "totalPages": {
+            "type": "integer",
+            "description": "Total number of pages",
+            "example": 5
+          },
+          "totalProducts": {
+            "type": "integer",
+            "description": "Total number of products",
+            "example": 50
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Number of products per page",
+            "example": 10
+          },
+          "hasNextPage": {
+            "type": "boolean",
+            "description": "Whether there is a next page",
+            "example": true
+          },
+          "hasPrevPage": {
+            "type": "boolean",
+            "description": "Whether there is a previous page",
+            "example": false
+          }
+        }
+      },
+      "PaginatedProducts": {
+        "type": "object",
+        "properties": {
+          "products": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Book"
+            }
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/PaginationInfo"
+          }
+        }
+      },
+      "TopSellingProducts": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Status of the request",
+            "example": true
+          },
+          "count": {
+            "type": "integer",
+            "description": "Number of products returned",
+            "example": 5
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Book"
+            },
+            "description": "Array of top selling products"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error message",
+            "example": "Lỗi khi xử lý yêu cầu"
+          },
+          "details": {
+            "type": "string",
+            "description": "Detailed error information",
+            "example": "Error details for debugging"
+          },
+          "status": {
+            "type": "integer",
+            "description": "HTTP status code",
+            "example": 500
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the error occurred",
+            "example": "2024-03-15T10:30:00Z"
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/api/auth/register": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Register a new user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User registered successfully"
+          },
+          "400": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Login user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials"
+          }
+        }
+      }
+    },
+    "/api/catalog": {
+      "get": {
+        "tags": ["Catalog"],
+        "summary": "Get all books",
+        "responses": {
+          "200": {
+            "description": "List of books",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Book"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Catalog"],
+        "summary": "Add a new book",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Book"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Book created successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/orders": {
+      "get": {
+        "tags": ["Orders"],
+        "summary": "Get all orders",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of orders retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrderList"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Orders"],
+        "summary": "Create a new order",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Order"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Order created successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/reviews": {
+      "get": {
+        "tags": ["Reviews"],
+        "summary": "Get book reviews",
+        "parameters": [
+          {
+            "name": "bookId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of reviews",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Review"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Reviews"],
+        "summary": "Add a new review",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Review"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Review created successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/users/{id}": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get user by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "User ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User details retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "60d21b4667d0d8992e610c85"
+                    },
+                    "fullName": {
+                      "type": "string",
+                      "example": "John Doe"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "active"
+                    },
+                    "totalOrders": {
+                      "type": "integer",
+                      "example": 5
+                    },
+                    "totalSpent": {
+                      "type": "number",
+                      "example": 299.95
+                    },
+                    "email": {
+                      "type": "string",
+                      "format": "email",
+                      "example": "john@example.com"
+                    },
+                    "phoneNumber": {
+                      "type": "string",
+                      "example": "0123456789"
+                    },
+                    "address": {
+                      "type": "string",
+                      "example": "123 Main St, City"
+                    },
+                    "role": {
+                      "type": "string",
+                      "example": "user"
+                    },
+                    "orders": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "60d21b4667d0d8992e610c85"
+                          },
+                          "totalAmount": {
+                            "type": "number",
+                            "example": 59.99
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": ["pending", "processing", "shipped", "delivered"],
+                            "example": "delivered"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2024-03-15T10:30:00Z"
+                          },
+                          "items": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "bookId": {
+                                  "type": "string",
+                                  "example": "60d21b4667d0d8992e610c85"
+                                },
+                                "quantity": {
+                                  "type": "integer",
+                                  "example": 2
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/users": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get all users (admin only)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of users retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example": "60d21b4667d0d8992e610c85"
+                      },
+                      "fullName": {
+                        "type": "string",
+                        "example": "John Doe"
+                      },
+                      "phoneNumber": {
+                        "type": "string",
+                        "example": "0123456789"
+                      },
+                      "status": {
+                        "type": "string",
+                        "example": "active"
+                      },
+                      "totalOrders": {
+                        "type": "integer",
+                        "example": 5
+                      },
+                      "totalSpent": {
+                        "type": "number",
+                        "example": 299.95
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Admin access required"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/orders/{id}": {
+      "get": {
+        "tags": ["Orders"],
+        "summary": "Get order by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Order ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Order details retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Order not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/products": {
+      "get": {
+        "tags": ["Products"],
+        "summary": "Get all products with pagination",
+        "description": "Retrieve a paginated list of products. Example: /api/products?page=1&limit=10",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number (default: 1)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
+            "example": 1
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of products per page (default: 10)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10
+            },
+            "example": 10
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of products retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedProducts"
+                },
+                "examples": {
+                  "default": {
+                    "summary": "Example response for 10 products",
+                    "value": {
+                      "products": [
+                        {
+                          "_id": "60d21b4667d0d8992e610c85",
+                          "title": "The Great Gatsby",
+                          "author": "F. Scott Fitzgerald",
+                          "price": 19.99,
+                          "description": "A story of the fabulously wealthy Jay Gatsby",
+                          "stock": 100,
+                          "createdAt": "2024-03-15T10:30:00Z"
+                        },
+                        {
+                          "_id": "60d21b4667d0d8992e610c86",
+                          "title": "To Kill a Mockingbird",
+                          "author": "Harper Lee",
+                          "price": 15.99,
+                          "description": "The story of young Scout Finch in a small Southern town",
+                          "stock": 75,
+                          "createdAt": "2024-03-14T09:15:00Z"
+                        }
+                        // Shortened for brevity, would include more products in real response
+                      ],
+                      "pagination": {
+                        "currentPage": 1,
+                        "totalPages": 5,
+                        "totalProducts": 50,
+                        "limit": 10,
+                        "hasNextPage": true,
+                        "hasPrevPage": false
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/products/top-selling": {
+      "get": {
+        "tags": ["Products"],
+        "summary": "Get top selling products",
+        "description": "Retrieve a list of the best-selling products. Default returns top 5 products.",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of top products to return (default: 5)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 20,
+              "default": 5
+            },
+            "example": 5
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Top selling products retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TopSellingProducts"
+                },
+                "examples": {
+                  "default": {
+                    "summary": "Example response for top 5 selling products",
+                    "value": {
+                      "success": true,
+                      "count": 5,
+                      "data": [
+                        {
+                          "_id": "60d21b4667d0d8992e610c85",
+                          "title": "The Great Gatsby",
+                          "author": "F. Scott Fitzgerald",
+                          "price": 19.99,
+                          "description": "A story of the fabulously wealthy Jay Gatsby",
+                          "stock": 100,
+                          "soldCount": 253,
+                          "createdAt": "2024-03-15T10:30:00Z"
+                        },
+                        {
+                          "_id": "60d21b4667d0d8992e610c86",
+                          "title": "To Kill a Mockingbird",
+                          "author": "Harper Lee",
+                          "price": 15.99,
+                          "description": "The story of young Scout Finch in a small Southern town",
+                          "stock": 75,
+                          "soldCount": 187,
+                          "createdAt": "2024-03-14T09:15:00Z"
+                        },
+                        {
+                          "_id": "60d21b4667d0d8992e610c87",
+                          "title": "1984",
+                          "author": "George Orwell",
+                          "price": 12.99,
+                          "description": "A dystopian novel about totalitarianism",
+                          "stock": 120,
+                          "soldCount": 156,
+                          "createdAt": "2024-03-13T14:45:00Z"
+                        },
+                        {
+                          "_id": "60d21b4667d0d8992e610c88",
+                          "title": "Pride and Prejudice",
+                          "author": "Jane Austen",
+                          "price": 10.99,
+                          "description": "A romantic novel of manners",
+                          "stock": 90,
+                          "soldCount": 134,
+                          "createdAt": "2024-03-12T11:20:00Z"
+                        },
+                        {
+                          "_id": "60d21b4667d0d8992e610c89",
+                          "title": "The Catcher in the Rye",
+                          "author": "J.D. Salinger",
+                          "price": 14.99,
+                          "description": "A novel about teenage angst and alienation",
+                          "stock": 110,
+                          "soldCount": 128,
+                          "createdAt": "2024-03-11T08:00:00Z"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/products/catalog/{catalog}": {
+      "get": {
+        "tags": ["Products"],
+        "summary": "Get products by catalog name",
+        "description": "Retrieve a list of products filtered by catalog name",
+        "parameters": [
+          {
+            "name": "catalog",
+            "in": "path",
+            "required": true,
+            "description": "Catalog name to filter by",
+            "schema": {
+              "type": "string"
+            },
+            "example": "Fiction"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Products retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "count": {
+                      "type": "integer",
+                      "description": "Number of products in this catalog",
+                      "example": 12
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Book"
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "default": {
+                    "summary": "Example response for Fiction catalog",
+                    "value": {
+                      "success": true,
+                      "count": 3,
+                      "data": [
+                        {
+                          "_id": "60d21b4667d0d8992e610c85",
+                          "title": "The Great Gatsby",
+                          "author": "F. Scott Fitzgerald",
+                          "price": 19.99,
+                          "description": "A story of the fabulously wealthy Jay Gatsby",
+                          "catalog": "Fiction",
+                          "stock": 100,
+                          "soldCount": 253,
+                          "createdAt": "2024-03-15T10:30:00Z"
+                        },
+                        {
+                          "_id": "60d21b4667d0d8992e610c86",
+                          "title": "To Kill a Mockingbird",
+                          "author": "Harper Lee",
+                          "price": 15.99,
+                          "description": "The story of young Scout Finch in a small Southern town",
+                          "catalog": "Fiction",
+                          "stock": 75,
+                          "soldCount": 187,
+                          "createdAt": "2024-03-14T09:15:00Z"
+                        },
+                        {
+                          "_id": "60d21b4667d0d8992e610c87",
+                          "title": "1984",
+                          "author": "George Orwell",
+                          "price": 12.99,
+                          "description": "A dystopian novel about totalitarianism",
+                          "catalog": "Fiction",
+                          "stock": 120,
+                          "soldCount": 156,
+                          "createdAt": "2024-03-13T14:45:00Z"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+} 
